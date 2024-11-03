@@ -1,0 +1,242 @@
+//"Package.json" @React native, Snacks-Expo
+// Before use this code, please install these package on the package.json.
+/*{
+  "dependencies": {
+    "react-navigation": "*",
+    "react-native-screens": "3.31.1",
+    "react-native-webview": "13.8.6",
+    "react-native-reanimated": "~3.10.1",
+    "@react-navigation/native": "6.0.0",
+    "react-native-gesture-handler": "~2.16.1",
+    "@react-navigation/bottom-tabs": "6.6.1",
+    "react-native-safe-area-context": "4.10.5",
+    "@expo/vector-icons": "^14.0.3",
+    "expo-constants": "~16.0.2"
+  }
+}
+*/
+
+
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { SafeAreaView } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { WebView } from 'react-native-webview';
+import Constants from 'expo-constants';
+
+const Tab = createBottomTabNavigator();
+// 홈 화면 
+function HomeScreen() {
+  return (
+    <SafeAreaView style={[styles.container, styles.HomeContainer]}>
+      <Text style={styles.HomeHeader}>Stay Hydrated Daily!</Text>
+      <Image style={styles.image} source={require('/assets/water.jpg')} />
+    </SafeAreaView>
+  );
+}
+// 물 섭취량 기록 화면 
+function RecordScreen() {
+  const [glasses, setGlasses] = useState(0);
+  const [goal, setGoal] = useState(0);
+
+  const incrementGlasses = () => {
+    if (glasses < goal) {
+      setGlasses(glasses + 1);
+    } else {
+      Alert.alert('축하합니다', '목표를 달성했어요!');
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.header}>Water Intake Tracker</Text>
+      <Text style={styles.basicText}>
+        목표: {goal} 잔 / 섭취량: {glasses} 잔
+      </Text>
+
+      <View style={styles.iconContainer}>
+        <Ionicons name="water" size={200} color="#5f9ea0" />
+        <Text style={styles.countText}>{glasses}</Text>
+      </View>
+
+      <TextInput
+        style={styles.input}
+        placeholder="목표를 설정해주세요"
+        keyboardType="numeric"
+        onChangeText={(text) => setGoal(parseInt(text) || 0)}
+      />
+
+      <TouchableOpacity style={styles.eventButton} onPress={incrementGlasses}>
+        <Text style={styles.eventButtonText}>Increase Count</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.resetButton} onPress={() => setGlasses(0)}>
+        <Text style={styles.eventButtonText}>Reset</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+// 프로필 화면 
+function ProfileScreen() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.header}>My Profile</Text>
+      <Image style={styles.profileImage} source={require('/assets/profile.png')}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Name"
+        value={name}
+        onChangeText={setName}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+      />
+      <TouchableOpacity style={styles.saveButton} onPress={() => alert('프로필이 성공적으로 업데이트 되었습니다!')}>
+        <Text style={styles.eventButtonText}>Save</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+// 웹뷰 화면
+function WebViewScreen() {
+  return (
+      <WebView
+        style={styles.container}
+        source={{ uri: 'https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=5510' }}
+      />
+  );
+}
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Tab.Navigator screenOptions={{ headerShown: false, tabBarActiveTintColor: '#4A90E2' }}>
+        <Tab.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{
+            tabBarIcon: ({ color }) => <Ionicons name="home-outline" size={24} color={color} />,
+          }}
+        />
+        <Tab.Screen
+          name="Track Water"
+          component={RecordScreen}
+          options={{
+            tabBarIcon: ({ color }) => <Ionicons name="list-outline" size={24} color={color} />,
+          }}
+        />
+        <Tab.Screen
+          name="Profile"
+          component={ProfileScreen}
+          options={{
+            tabBarIcon: ({ color }) => <Ionicons name="person-outline" size={24} color={color} />,
+          }}
+        />
+        <Tab.Screen
+          name="Learn More"
+          component={WebViewScreen}
+          options={{
+            tabBarIcon: ({ color }) => <Ionicons name="earth-outline" size={24} color={color} />,
+          }}
+        />
+      </Tab.Navigator>
+    </NavigationContainer>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+    marginTop: Constants.statusBarHeight,
+  },
+  HomeContainer: {
+    backgroundColor: '#e0f7fa',
+    padding: 20,
+    borderRadius: 15,
+  },
+  HomeHeader: {
+    fontSize: 26,
+    fontWeight: 'bold',
+    color: '#00796b',
+    marginBottom: 15,
+    marginTop: 60,
+  },
+  iconContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  countText: {
+    fontSize: 50,
+    fontWeight: 'bold',
+    color: '#5f9ea0',
+    marginTop: 10,
+  },
+  header: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    marginTop: 50,
+  },
+  basicText: {
+    fontSize: 18,
+    color: '#5a5a5a',
+    fontWeight: '600',
+    marginVertical: 10,
+  },
+  eventButton: {
+    marginTop: 20,
+    paddingVertical: 13,
+    paddingHorizontal: 30,
+    backgroundColor: '#00796b',
+    borderRadius: 10,
+  },
+  resetButton: {
+    marginTop: 15,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: '#80cbc4',
+    borderRadius: 25,
+  },
+  eventButtonText: {
+    fontSize: 18,
+    color: 'white',
+  },
+  input: {
+    height: 40,
+    borderColor: '#bdbdbd',
+    borderWidth: 1,
+    borderRadius: 5,
+    marginBottom: 12,
+    paddingLeft: 10,
+    width: '80%',
+  },
+  profileImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 20,
+    borderWidth: 2,
+    borderColor: '#4A90E2',
+  },
+  saveButton: {
+    marginTop: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    backgroundColor: '#4A90E2',
+    borderRadius: 10,
+  },
+
+});
